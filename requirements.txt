@@ -1,0 +1,10 @@
+scikit-learn==1.2.2
+#xgboost==1.7.6
+pandas==2.0.2
+#imblearn==0.10.1
+flask==2.3.2
+requests==2.31.0
+waitress==2.1.2
+mlflow==2.4.1
+#optuna==3.2.0
+prefect==2.10.16

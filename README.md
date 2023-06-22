@@ -7,7 +7,7 @@
 ## Understanding the service:
 This is a classifier that predicts if it is safe to bet on Liverpool FC NOT LOSING (win or draw) an English Premier League match under the management of Jurgen Klopp. The dataset upon which this classifier was trained is small, as there have been less than 300 EPL matches for Liverpool since Klopp assumed the managerial position in the 2015/2016 season. Again, there have 
 been some tactical and individual alterations in recent times to Jurgen's style that we might have to wait a while to retrieve more data of this new style in order to train a model that is almost foolproof. Nonetheless, this classifier works just fine for now, as is evident in the screenshots below of the model accurately predicting that it would
-be safe to bet on Liverpool not losing their EPL match on the 21st of January, 2023, against Chelsea FC.
+be safe to bet on Liverpool not losing their EPL match on the 28th of May 2023, against Southampton FC.
 
 ## Understanding the data:
 
@@ -110,3 +110,4 @@ Open up a new terminal. Run ```python webservice/predict_test.py``` to interact 
 Now, run ```python cloud_server/flow.py``` in one terminal, followed by ```python cloud_server/test_flow.py``` in another terminal.
 
 Try it out with family, friends, colleagues, neighbours, and let me know how to improve on it.
+

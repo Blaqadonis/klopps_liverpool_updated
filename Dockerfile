@@ -1,10 +1,10 @@
-FROM python:3.10-slim
+FROM python:3.10-slim-buster
 
 RUN pip install -U pip 
 
 WORKDIR /app
 
-COPY [ "predict.py", "tree.bin", "vectorizer.bin", "requirements.txt", "./" ]
+COPY [ "predict.py", "model/pipeline.bin", "requirements.txt", "./" ]
 
 RUN pip install -r requirements.txt
 EXPOSE 9696

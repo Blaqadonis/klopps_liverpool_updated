@@ -1,32 +1,27 @@
 import pickle
-
+#import numpy as np
 from flask import Flask, request, jsonify
 import pandas as pd
 
-with open('tree.bin', 'rb') as f_in:
+# Load the pre-trained model and vectorizer using pickle
+with open('pipeline.bin', 'rb') as f_in:
     model = pickle.load(f_in)
-with open('vectorizer.bin', 'rb') as f_in:
-    dv = pickle.load(f_in)
 
+
+app = Flask("Klopps_Liverpool")
 
 def prepare_features(data):
-    #data = {}
-    data = pd.DataFrame(data,index=range(0,1))
-    data.columns = [x.lower() for x in data.columns]
+    '''Preprocess the input data and make predictions using the pre-trained model'''
+    # Create a DataFrame with a single row containing the input data
+    data = pd.DataFrame(data, index=[0])
+
+    # Preprocess the input data (similar to the preprocessing during training)
+    data = data.applymap(lambda s: s.lower().replace(' ', '_') if isinstance(s, str) else s)
+    data.columns = [x.lower().replace(' ', '_').replace(':', '').replace('*', '').replace('.', '')
+                    for x in data.columns]
     data['date'] = pd.to_datetime(data['date'], dayfirst=True)
-    
     data['day'] = data['date'].dt.day
     
-    
-
-    data= data.applymap(lambda s:s.lower().replace(' ', '_') if type(s) == str else s)
-    data.columns = [x.lower().replace(' ', '_') for x in data.columns]
-    data.columns = [x.lower().replace(':', '') for x in data.columns]
-    data.columns = [x.lower().replace('*', '') for x in data.columns]
-    data.columns = [x.lower().replace('.', '') for x in data.columns]
-
-
-
     data['ground'] = data['venue'].replace(['home'], 1)
     data['ground'] = data['ground'].replace(['away'], 0)
     data['foreign_league'] = data['uefa'].replace(['active'], 1)
@@ -41,37 +36,40 @@ def prepare_features(data):
     data['current_form'] = data['current_form'].replace(['decent'], 1)
     data['current_form'] = data['current_form'].replace(['poor'], 0)
 
-    data = data.drop(['venue','uefa','season','opposition','form','date'],axis=1)
+    data = data.drop(['venue', 'uefa', 'season', 'opposition', 'form', 'date'], axis=1)
+
+    return data
+
+def predict(data):
+    '''Preprocess the input data and make predictions using the pre-trained model'''
     dicts = data.to_dict(orient='records')
-    return dicts
+
+    # Use the vectorizer to transform the data to the same format as during training
+    #data_transformed = dv.transform(data)
+
+    # Make predictions using the pre-trained model
+    pred = model.predict(dicts)
+
+    return pred
 
 
-def predict(dicts):
-    X = dv.transform(dicts)
-    pred = model.predict(X)
-    return float(pred[0])
-
-
-app = Flask("Klopps_Liverpool")
-@app.route('/predict', methods=['POST'])  #this decorator will turn predict_endpoint
-#function into an endpoint
+@app.route('/predict', methods=['POST'])
 def predict_endpoint():
-    match = request.get_json()
-    dicts = prepare_features(match)
-    pred = predict(dicts)
-    
+    '''Endpoint for making predictions'''
+    try:
+        data = request.get_json()
+        dicts = prepare_features(data)
+        pred = predict(dicts)
 
-    if pred == 1:
-        result = {
-            "Prediction": "Safe to bet"  
-        }
-        
-    else:
-        result = {
-         "Prediction": "Unsafe to bet"  
-        }
-        
-    return jsonify(result)
+        if pred[0] == 1:
+            result = {"Prediction": "Safe to bet"}
+        else:
+            result = {"Prediction": "Unsafe to bet"}
+
+        return jsonify(result)
+
+    except Exception as error:
+        return jsonify({"Error": str(error)}), 400
 
 
 if __name__ == '__main__':

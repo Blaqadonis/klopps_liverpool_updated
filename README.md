@@ -39,7 +39,7 @@ Before running the service, create a virtual environment with Python 3.10.11 (or
 
 ```mlflow server --backend-store-uri sqlite:///mlflow.db --default-artifact-root ./artifacts --host localhost --port 5000```
 
-- Run the notebook ```liverpool.ipynb``` to train and save the initial model.
+- Create a directory ```model```. Run the notebook ```liverpool.ipynb``` to train and save the initial model.
 
 To run the service using the Dockerfile:
 
